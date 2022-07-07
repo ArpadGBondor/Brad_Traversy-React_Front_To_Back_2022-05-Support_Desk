@@ -1,9 +1,13 @@
 const express = require('express');
+const colors = require('colors');
 const dotenv = require('dotenv').config();
 const { errorHandler, invalidPathHandler } = require('./middleware/errorMiddleware');
-
+const connectDB = require('./config/db');
 const PORT = process.env.PORT || 5000;
 const app = express();
+
+// Connect to database
+connectDB();
 
 // // Parse "application/json" incoming Request objects as a JSON Object
 // app.use(express.json());
