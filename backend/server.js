@@ -10,11 +10,11 @@ const app = express();
 connectDB();
 
 // // Parse "application/json" incoming Request objects as a JSON Object
-// app.use(express.json());
+app.use(express.json());
 // // Parse "application/x-www-form-urlencoded", can only parse incoming Request Object if strings or arrays
-// app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false }));
 // combines the 2 above, can parse objects with nested objects, and generally any type
-app.use(express.urlencoded({ extended: true }));
+// app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
     res.status(200).json({ message: 'Welcome to the Support Desk API' });

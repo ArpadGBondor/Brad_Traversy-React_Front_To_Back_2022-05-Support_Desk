@@ -53,6 +53,8 @@ const registerUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
+    console.log(req.body);
+
     // Validation
     if (!email || !password) {
         res.status(400);
