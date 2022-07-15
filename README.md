@@ -35,4 +35,4 @@
 
 ## Resources:
 
-    -   The source code of the instructor's solution is in [this Github repo](https://github.com/bradtraversy/support-desk)
+-   The source code of the instructor's solution is in [this Github repo](https://github.com/bradtraversy/support-desk)
