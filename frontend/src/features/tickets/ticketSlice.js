@@ -23,7 +23,7 @@ export const createTicket = createAsyncThunk('tickets/createNewTicket', async (t
 });
 
 // Get user tickets
-export const getTickets = createAsyncThunk('tickets/geAllUserTickets', async (_, thunkAPI) => {
+export const getTickets = createAsyncThunk('tickets/getAllUserTickets', async (_, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
         return await ticketService.getTickets(token);
@@ -34,8 +34,32 @@ export const getTickets = createAsyncThunk('tickets/geAllUserTickets', async (_,
     }
 });
 
+// Get single ticket
+export const getTicket = createAsyncThunk('tickets/getSingleTicket', async (ticketID, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await ticketService.getTicket(ticketID, token);
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+// Close ticket
+export const closeTicket = createAsyncThunk('tickets/closeTicket', async (ticketID, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await ticketService.closeTicket(ticketID, token);
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
 export const ticketSlice = createSlice({
-    name: 'ticket',
+    name: 'tickets',
     initialState,
     reducers: {
         reset: (state) => {
@@ -71,7 +95,35 @@ export const ticketSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
-                state.tickets = [];
+            })
+            .addCase(getTicket.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getTicket.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.ticket = action.payload;
+            })
+            .addCase(getTicket.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            .addCase(closeTicket.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(closeTicket.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.ticket = action.payload;
+                state.tickets = state.tickets.map((ticket) =>
+                    ticket._id === action.payload._id ? action.payload : ticket
+                );
+            })
+            .addCase(closeTicket.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
             });
     },
 });

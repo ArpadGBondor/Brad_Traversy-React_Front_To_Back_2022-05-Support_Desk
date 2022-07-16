@@ -57,13 +57,6 @@ const getSingleTicket = asyncHandler(async (req, res) => {
 // @access Private
 const updateTicket = asyncHandler(async (req, res) => {
     const { ticketID } = req.params;
-    const { product, description } = req.body;
-
-    // Validation
-    if (!product || !description) {
-        res.status(400);
-        throw new Error('Please include all fields');
-    }
 
     const ticket = await Ticket.findById(ticketID);
 
@@ -77,7 +70,7 @@ const updateTicket = asyncHandler(async (req, res) => {
         throw new Error('Not Authorised');
     }
 
-    const updatedTicket = await Ticket.findByIdAndUpdate(ticketID, { product, description }, { new: true });
+    const updatedTicket = await Ticket.findByIdAndUpdate(ticketID, req.body, { new: true });
 
     res.status(200).json(updatedTicket);
 });
