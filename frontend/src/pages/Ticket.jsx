@@ -1,41 +1,55 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getTicket, closeTicket, reset } from '../features/tickets/ticketSlice';
+import { getTicket, closeTicket, errorReset, ticketReset } from '../features/tickets/ticketSlice';
+import { getNotes, reset as notesReset, errorReset as notesErrorReset } from '../features/notes/noteSlice';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 import BackButton from '../components/BackButton';
 import Spinner from '../components/Spinner';
+import NoteItem from '../components/NoteItem';
 
 function Ticket() {
     const { ticket, isLoading, isSuccess, isError, message } = useSelector((state) => state.tickets);
+    const {
+        notes,
+        isLoading: notesIsLoading,
+        isSuccess: notesIsSuccess,
+        isError: notesIsError,
+        message: notesMessage,
+    } = useSelector((state) => state.notes);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { ticketID } = useParams();
 
     useEffect(() => {
-        if (isError) {
+        if (isError & message) {
             toast.error(message);
-            dispatch(reset());
+            dispatch(errorReset());
         }
-        return () => {
-            if (isSuccess) {
-                dispatch(reset());
-            }
-        };
-    }, [isSuccess, dispatch, isError, message]);
+        if (notesIsError & notesMessage) {
+            toast.error(notesMessage);
+            dispatch(notesErrorReset());
+        }
+    }, [dispatch, isError, message, notesIsError, notesMessage]);
 
     useEffect(() => {
         dispatch(getTicket(ticketID));
-    }, [dispatch, ticketID]);
+        dispatch(getNotes(ticketID));
+        return () => {
+            dispatch(ticketReset());
+            dispatch(notesReset());
+        };
+        // eslint-disable-next-line
+    }, []);
 
     const onTicketClose = () => {
         dispatch(closeTicket(ticketID));
         toast.success('Ticket Closed');
         navigate('/tickets');
     };
-    if (isLoading) return <Spinner />;
-    if (isError) return <h3>Something went wrong.</h3>;
+    if (isLoading || notesIsLoading) return <Spinner />;
+    if (isError || notesIsError) return <h3>Something went wrong.</h3>;
     return (
         <div className="ticket-page">
             <header className="ticket-header">
@@ -51,7 +65,13 @@ function Ticket() {
                     <h3>Description of Issue</h3>
                     <p>{ticket.description}</p>
                 </div>
+                <h2>Notes</h2>
             </header>
+
+            {notes.map((note) => (
+                <NoteItem key={note._id} note={note} />
+            ))}
+
             {ticket.status !== 'closed' && (
                 <button className="btn btn-block btn-danger" onClick={onTicketClose}>
                     Close Ticket

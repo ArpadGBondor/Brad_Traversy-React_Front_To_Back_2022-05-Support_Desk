@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getTickets, reset } from '../features/tickets/ticketSlice';
+import { getTickets, reset, errorReset } from '../features/tickets/ticketSlice';
 import { toast } from 'react-toastify';
 import Spinner from '../components/Spinner';
 import BackButton from '../components/BackButton';
@@ -11,19 +11,18 @@ function Tickets() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (isError) {
+        if (isError & message) {
             toast.error(message);
-            dispatch(reset());
+            dispatch(errorReset());
         }
-        return () => {
-            if (isSuccess) {
-                dispatch(reset());
-            }
-        };
     }, [isSuccess, dispatch, isError, message]);
     useEffect(() => {
         dispatch(getTickets());
-    }, [dispatch]);
+        return () => {
+            dispatch(reset());
+        };
+        // eslint-disable-next-line
+    }, []);
 
     if (isLoading) return <Spinner />;
     if (isError) return <h3>Something went wrong.</h3>;

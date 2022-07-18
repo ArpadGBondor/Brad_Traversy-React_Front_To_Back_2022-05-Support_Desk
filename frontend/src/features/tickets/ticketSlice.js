@@ -62,6 +62,16 @@ export const ticketSlice = createSlice({
     name: 'tickets',
     initialState,
     reducers: {
+        errorReset: (state) => {
+            state.message = '';
+        },
+        ticketReset: (state) => {
+            state.isError = false;
+            state.isSuccess = false;
+            state.isLoading = false;
+            state.message = '';
+            state.ticket = {};
+        },
         reset: (state) => {
             state.isError = false;
             state.isSuccess = false;
@@ -128,5 +138,5 @@ export const ticketSlice = createSlice({
     },
 });
 
-export const { reset } = ticketSlice.actions;
+export const { reset, errorReset, ticketReset } = ticketSlice.actions;
 export default ticketSlice.reducer;
