@@ -62,9 +62,11 @@ export const ticketSlice = createSlice({
     name: 'tickets',
     initialState,
     reducers: {
+        // clear error message after showing it to user
         errorReset: (state) => {
             state.message = '';
         },
+        // clear ticket object and every status flag
         ticketReset: (state) => {
             state.isError = false;
             state.isSuccess = false;
@@ -72,6 +74,7 @@ export const ticketSlice = createSlice({
             state.message = '';
             state.ticket = {};
         },
+        // clear every status flag
         reset: (state) => {
             state.isError = false;
             state.isSuccess = false;

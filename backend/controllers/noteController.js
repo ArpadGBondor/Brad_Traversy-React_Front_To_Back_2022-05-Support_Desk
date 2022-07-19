@@ -45,6 +45,7 @@ const createNote = asyncHandler(async (req, res) => {
         ticket: ticketID,
     });
 
+    console.log(newNote);
     res.status(201).json(newNote);
 });
 
