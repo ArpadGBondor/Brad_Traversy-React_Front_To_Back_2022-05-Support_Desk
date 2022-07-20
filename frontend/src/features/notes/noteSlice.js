@@ -27,7 +27,6 @@ export const createNote = createAsyncThunk('notes/createNote', async ({ noteText
         const token = thunkAPI.getState().auth.user.token;
         return await noteService.createNote(noteText, ticketId, token);
     } catch (error) {
-        console.log(error);
         const message =
             (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
         return thunkAPI.rejectWithValue(message);

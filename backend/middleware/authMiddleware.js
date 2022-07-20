@@ -20,7 +20,6 @@ const protect = asyncHandler(async (req, res, next) => {
 
             next();
         } catch (error) {
-            console.log(error);
             res.status(401);
             throw new Error('Not authirised');
         }

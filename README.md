@@ -7,6 +7,10 @@
 -   Section 19: Tickets Functionality
 -   Section 20: Notes Functionality & Deploy
 
+## Description
+
+The project is a full stack application, that allows users to register, login, create helpdesk tickets, close tickets, and communicate with customer service by making notes under the tickets. The customer service side login, and handling tickets is not included in the project.
+
 ## Deployed
 
 -   Not yet. (Probably goes on Heroku...)

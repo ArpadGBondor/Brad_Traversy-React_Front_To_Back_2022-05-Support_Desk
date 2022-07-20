@@ -29,11 +29,10 @@ Modal.setAppElement('#root');
 function Ticket() {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [noteText, setNoteText] = useState('');
-    const { ticket, isLoading, isSuccess, isError, message } = useSelector((state) => state.tickets);
+    const { ticket, isLoading, isError, message } = useSelector((state) => state.tickets);
     const {
         notes,
         isLoading: notesIsLoading,
-        isSuccess: notesIsSuccess,
         isError: notesIsError,
         message: notesMessage,
     } = useSelector((state) => state.notes);
@@ -73,8 +72,6 @@ function Ticket() {
     const onNoteSubmit = (e) => {
         e.preventDefault();
         dispatch(createNote({ noteText, ticketId }));
-        console.log('Submit');
-
         closeModal();
         setNoteText('');
     };
