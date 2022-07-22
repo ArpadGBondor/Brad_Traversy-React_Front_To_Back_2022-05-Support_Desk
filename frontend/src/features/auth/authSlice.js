@@ -1,15 +1,18 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit';
 import authService from './authService';
+// NOTE: use a extractErrorMessage function to save some repetition
+import { extractErrorMessage } from '../../utils';
 
 // Get user from localstorage
 const user = JSON.parse(localStorage.getItem('user'));
 
+// NOTE: remove isSuccess from state as we can infer from
+// presence or absence of user plus no need for a reset function
+// No need for isError or message as we can catch the AsyncThunkAction rejection
+// in our component and we will have the error message there
 const initialState = {
     user: user ? user : null,
-    isError: false,
-    isSuccess: false,
     isLoading: false,
-    message: '',
 };
 
 // Register new user
@@ -17,10 +20,7 @@ export const register = createAsyncThunk('auth/register', async (user, thunkAPI)
     try {
         return await authService.register(user);
     } catch (error) {
-        const message =
-            (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
-
-        return thunkAPI.rejectWithValue(message);
+        return thunkAPI.rejectWithValue(extractErrorMessage(error));
     }
 });
 
@@ -29,61 +29,53 @@ export const login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
     try {
         return await authService.login(user);
     } catch (error) {
-        const message =
-            (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
-
-        return thunkAPI.rejectWithValue(message);
+        return thunkAPI.rejectWithValue(extractErrorMessage(error));
     }
 });
 
 // Logout user
-export const logout = createAsyncThunk('auth/logout', async () => {
-    await authService.logout();
+// NOTE: here we don't need a thunk as we are not doing anything async so we can
+// use a createAction instead
+export const logout = createAction('auth/logout', () => {
+    authService.logout();
+    // return an empty object as our payload as we don't need a payload but the
+    // prepare function requires a payload return
+    return {};
 });
 
 export const authSlice = createSlice({
     name: 'auth',
     initialState,
-    reducers: {
-        reset: (state) => {
-            state.isError = false;
-            state.isSuccess = false;
-            state.isLoading = false;
-            state.message = '';
-        },
-    },
     extraReducers: (builder) => {
         builder
             .addCase(register.pending, (state) => {
+                // reset state on pending
+                state.user = null;
                 state.isLoading = true;
             })
             .addCase(register.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.isSuccess = true;
                 state.user = action.payload;
-            })
-            .addCase(register.rejected, (state, action) => {
                 state.isLoading = false;
-                state.isError = true;
-                state.user = null;
-                state.message = action.payload;
             })
-            .addCase(logout.fulfilled, (state) => {
+            .addCase(register.rejected, (state) => {
+                state.isLoading = false;
                 state.user = null;
             })
             .addCase(login.pending, (state) => {
-                state.isLoading = true;
+                // reset state on pending
+                state.user = null;
+                state.isLoading = false;
             })
             .addCase(login.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.isSuccess = true;
                 state.user = action.payload;
-            })
-            .addCase(login.rejected, (state, action) => {
                 state.isLoading = false;
-                state.isError = true;
+            })
+            .addCase(login.rejected, (state) => {
+                state.isLoading = false;
                 state.user = null;
-                state.message = action.payload;
+            })
+            .addCase(logout, (state) => {
+                state.user = null;
             });
     },
 });

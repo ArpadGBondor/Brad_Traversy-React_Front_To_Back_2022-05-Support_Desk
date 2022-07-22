@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaUser } from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux';
-import { register, reset } from '../features/auth/authSlice';
+import { register } from '../features/auth/authSlice';
 import Spinner from '../components/Spinner';
 
 function Register() {
@@ -13,30 +13,30 @@ function Register() {
         password: '',
         password2: '',
     });
+
     const { name, email, password, password2 } = formData;
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { user, isLoading, isSuccess, isError, message } = useSelector((state) => state.auth);
 
-    useEffect(() => {
-        if (isError) {
-            toast.error(message);
-        }
-        // Redirect when logged in
-        if (isSuccess || user) {
-            navigate('/');
-        }
+    const { isLoading } = useSelector((state) => state.auth);
 
-        dispatch(reset());
-    }, [isError, isSuccess, user, message, navigate, dispatch]);
     const onChange = (e) => {
         setFormData((prevState) => ({
             ...prevState,
             [e.target.name]: e.target.value,
         }));
     };
+
+    // NOTE: no need for useEffect here as we can catch the
+    // AsyncThunkAction rejection in our onSubmit or redirect them on the
+    // resolution
+    // Side effects shoulld go in event handlers where possible
+    // source: - https://beta.reactjs.org/learn/keeping-components-pure#where-you-can-cause-side-effects
+
     const onSubmit = (e) => {
         e.preventDefault();
+
         if (password !== password2) {
             toast.error('Passwords do not match');
         } else {
@@ -46,11 +46,22 @@ function Register() {
                 password,
             };
 
-            dispatch(register(userData));
+            dispatch(register(userData))
+                .unwrap()
+                .then((user) => {
+                    // NOTE: by unwrapping the AsyncThunkAction we can navigate the user after
+                    // getting a good response from our API or catch the AsyncThunkAction
+                    // rejection to show an error message
+                    toast.success(`Registered new user - ${user.name}`);
+                    navigate('/');
+                })
+                .catch(toast.error);
         }
     };
 
-    if (isLoading) return <Spinner />;
+    if (isLoading) {
+        return <Spinner />;
+    }
 
     return (
         <>
@@ -66,9 +77,9 @@ function Register() {
                     <div className="form-group">
                         <input
                             type="text"
-                            name="name"
-                            id="name"
                             className="form-control"
+                            id="name"
+                            name="name"
                             value={name}
                             onChange={onChange}
                             placeholder="Enter your name"
@@ -78,40 +89,37 @@ function Register() {
                     <div className="form-group">
                         <input
                             type="email"
-                            name="email"
-                            id="email"
                             className="form-control"
+                            id="email"
+                            name="email"
                             value={email}
                             onChange={onChange}
                             placeholder="Enter your email"
                             required
-                            autoComplete="username"
                         />
                     </div>
                     <div className="form-group">
                         <input
                             type="password"
-                            name="password"
-                            id="password"
                             className="form-control"
+                            id="password"
+                            name="password"
                             value={password}
                             onChange={onChange}
-                            placeholder="Enter your password"
+                            placeholder="Enter password"
                             required
-                            autoComplete="new-password"
                         />
                     </div>
                     <div className="form-group">
                         <input
                             type="password"
-                            name="password2"
-                            id="password2"
                             className="form-control"
+                            id="password2"
+                            name="password2"
                             value={password2}
                             onChange={onChange}
                             placeholder="Confirm password"
                             required
-                            autoComplete="new-password"
                         />
                     </div>
                     <div className="form-group">
