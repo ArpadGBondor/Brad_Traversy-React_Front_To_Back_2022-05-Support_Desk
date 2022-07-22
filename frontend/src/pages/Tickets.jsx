@@ -1,31 +1,28 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getTickets, reset, errorReset } from '../features/tickets/ticketSlice';
-import { toast } from 'react-toastify';
+import { getTickets } from '../features/tickets/ticketSlice';
 import Spinner from '../components/Spinner';
 import BackButton from '../components/BackButton';
 import TicketItem from '../components/TicketItem';
 
 function Tickets() {
-    const { tickets, isLoading, isSuccess, isError, message } = useSelector((state) => state.tickets);
+    const { tickets } = useSelector((state) => state.tickets);
+
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        if (isError & message) {
-            toast.error(message);
-            dispatch(errorReset());
-        }
-    }, [isSuccess, dispatch, isError, message]);
+    // NOTE: only need one useEffect here
+
     useEffect(() => {
         dispatch(getTickets());
-        return () => {
-            dispatch(reset());
-        };
-        // eslint-disable-next-line
-    }, []);
+    }, [dispatch]);
 
-    if (isLoading) return <Spinner />;
-    if (isError) return <h3>Something went wrong.</h3>;
+    // NOTE: no need for loading state, we can check for absence of tickets
+    // If we don't have tickets we are loading, if we do have tickets we just
+    // need to update the tickets with latest tickets in the background
+    if (!tickets) {
+        return <Spinner />;
+    }
+
     return (
         <>
             <BackButton url="/" />

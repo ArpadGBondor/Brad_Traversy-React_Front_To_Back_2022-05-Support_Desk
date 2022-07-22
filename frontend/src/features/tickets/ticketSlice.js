@@ -1,145 +1,84 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import ticketService from './ticketService';
+// NOTE: use a extractErrorMessage function to save some repetition
+import { extractErrorMessage } from '../../utils';
 
+// NOTE: no need for isLoading, isSuccess, isError or message as we can leverage
+// our AsyncThunkAction and get Promise reolved or rejected messages at
+// component level
 const initialState = {
-    tickets: [],
-    ticket: {},
-    isError: false,
-    isSuccess: false,
-    isLoading: false,
-    message: '',
+    tickets: null,
+    ticket: null,
 };
 
 // Create new ticket
-export const createTicket = createAsyncThunk('tickets/createNewTicket', async (ticketData, thunkAPI) => {
+export const createTicket = createAsyncThunk('tickets/create', async (ticketData, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
         return await ticketService.createTicket(ticketData, token);
     } catch (error) {
-        const message =
-            (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
-        return thunkAPI.rejectWithValue(message);
+        return thunkAPI.rejectWithValue(extractErrorMessage(error));
     }
 });
 
 // Get user tickets
-export const getTickets = createAsyncThunk('tickets/getAllUserTickets', async (_, thunkAPI) => {
+export const getTickets = createAsyncThunk('tickets/getAll', async (_, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
         return await ticketService.getTickets(token);
     } catch (error) {
-        const message =
-            (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
-        return thunkAPI.rejectWithValue(message);
+        return thunkAPI.rejectWithValue(extractErrorMessage(error));
     }
 });
 
-// Get single ticket
-export const getTicket = createAsyncThunk('tickets/getSingleTicket', async (ticketID, thunkAPI) => {
+// Get user ticket
+export const getTicket = createAsyncThunk('tickets/get', async (ticketId, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
-        return await ticketService.getTicket(ticketID, token);
+        return await ticketService.getTicket(ticketId, token);
     } catch (error) {
-        const message =
-            (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
-        return thunkAPI.rejectWithValue(message);
+        return thunkAPI.rejectWithValue(extractErrorMessage(error));
     }
 });
 
 // Close ticket
-export const closeTicket = createAsyncThunk('tickets/closeTicket', async (ticketID, thunkAPI) => {
+export const closeTicket = createAsyncThunk('tickets/close', async (ticketId, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
-        return await ticketService.closeTicket(ticketID, token);
+        return await ticketService.closeTicket(ticketId, token);
     } catch (error) {
-        const message =
-            (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
-        return thunkAPI.rejectWithValue(message);
+        return thunkAPI.rejectWithValue(extractErrorMessage(error));
     }
 });
+
+// NOTE: removed loading, isSuccess state as it can be infered from presence or
+// absence of tickets for simpler state management with no need for a reset
+// function
 
 export const ticketSlice = createSlice({
     name: 'tickets',
     initialState,
-    reducers: {
-        // clear error message after showing it to user
-        errorReset: (state) => {
-            state.message = '';
-        },
-        // clear ticket object and every status flag
-        ticketReset: (state) => {
-            state.isError = false;
-            state.isSuccess = false;
-            state.isLoading = false;
-            state.message = '';
-            state.ticket = {};
-        },
-        // clear every status flag
-        reset: (state) => {
-            state.isError = false;
-            state.isSuccess = false;
-            state.isLoading = false;
-            state.message = '';
-        },
-    },
     extraReducers: (builder) => {
         builder
-            .addCase(createTicket.pending, (state) => {
-                state.isLoading = true;
-            })
-            .addCase(createTicket.fulfilled, (state) => {
-                state.isLoading = false;
-                state.isSuccess = true;
-            })
-            .addCase(createTicket.rejected, (state, action) => {
-                state.isLoading = false;
-                state.isError = true;
-                state.message = action.payload;
-            })
             .addCase(getTickets.pending, (state) => {
-                state.isLoading = true;
+                // NOTE: clear single ticket on tickets page, this replaces need for
+                // loading state on individual ticket
+                state.ticket = null;
+                state.tickets = null;
             })
             .addCase(getTickets.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.isSuccess = true;
                 state.tickets = action.payload;
             })
-            .addCase(getTickets.rejected, (state, action) => {
-                state.isLoading = false;
-                state.isError = true;
-                state.message = action.payload;
-            })
-            .addCase(getTicket.pending, (state) => {
-                state.isLoading = true;
-            })
             .addCase(getTicket.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.isSuccess = true;
                 state.ticket = action.payload;
             })
-            .addCase(getTicket.rejected, (state, action) => {
-                state.isLoading = false;
-                state.isError = true;
-                state.message = action.payload;
-            })
-            .addCase(closeTicket.pending, (state) => {
-                state.isLoading = true;
-            })
             .addCase(closeTicket.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.isSuccess = true;
                 state.ticket = action.payload;
                 state.tickets = state.tickets.map((ticket) =>
                     ticket._id === action.payload._id ? action.payload : ticket
                 );
-            })
-            .addCase(closeTicket.rejected, (state, action) => {
-                state.isLoading = false;
-                state.isError = true;
-                state.message = action.payload;
             });
     },
 });
 
-export const { reset, errorReset, ticketReset } = ticketSlice.actions;
 export default ticketSlice.reducer;
