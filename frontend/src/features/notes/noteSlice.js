@@ -1,57 +1,59 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import noteService from './noteService';
+// NOTE: use a extractErrorMessage function to save some repetition
+import { extractErrorMessage } from '../../utils';
+
+// NOTE: removed isLoading, isSuccess and reset
+// loading can be infered from presence or absence of notes
+// success can be infered from presence or absence of error
+// reset was never actually used
 
 const initialState = {
-    notes: [],
-    isLoading: false,
-    isSuccess: false,
+    notes: null,
     isError: false,
     message: '',
 };
 
-// Get notes for a ticket
-export const getNotes = createAsyncThunk('notes/getNotes', async (ticketId, thunkAPI) => {
+// Get ticket notes
+export const getNotes = createAsyncThunk('notes/getAll', async (ticketId, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
         return await noteService.getNotes(ticketId, token);
     } catch (error) {
-        const message =
-            (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
-        return thunkAPI.rejectWithValue(message);
+        return thunkAPI.rejectWithValue(extractErrorMessage(error));
     }
 });
 
 // Create ticket note
-export const createNote = createAsyncThunk('notes/createNote', async ({ noteText, ticketId }, thunkAPI) => {
-    try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await noteService.createNote(noteText, ticketId, token);
-    } catch (error) {
-        const message =
-            (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
-        return thunkAPI.rejectWithValue(message);
+export const createNote = createAsyncThunk(
+    'notes/create',
+    async ({ noteText, ticketId }, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().auth.user.token;
+            return await noteService.createNote(noteText, ticketId, token);
+        } catch (error) {
+            return thunkAPI.rejectWithValue(extractErrorMessage(error));
+        }
     }
-});
+);
 
 export const noteSlice = createSlice({
-    name: 'notes',
+    name: 'note',
     initialState,
-    reducers: {
-        // clear notes object and status flags
-        reset: (state) => initialState,
-        // clear error message after showing it to user
-        errorReset: (state) => {
-            state.message = '';
-        },
-    },
     extraReducers: (builder) => {
         builder
             .addCase(getNotes.pending, (state) => {
-                state.isLoading = true;
+                // NOTE: reset notes to null on pending so we can show a Spinner while
+                // fetching notes
+                state.notes = null;
+                state.isError = false;
+                state.message = '';
             })
             .addCase(getNotes.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.isSuccess = true;
+                // NOTE: even if there are no notes for the ticket we get an empty
+                // array, so we can use this to detect if we have notes or are fetching
+                // notes. Payload will be an array of notes or an empty array, either
+                // means we have finished fetching the notes.
                 state.notes = action.payload;
             })
             .addCase(getNotes.rejected, (state, action) => {
@@ -59,21 +61,14 @@ export const noteSlice = createSlice({
                 state.isError = true;
                 state.message = action.payload;
             })
-            .addCase(createNote.pending, (state) => {
-                state.isLoading = true;
-            })
             .addCase(createNote.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.isSuccess = true;
                 state.notes.push(action.payload);
             })
             .addCase(createNote.rejected, (state, action) => {
-                state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
             });
     },
 });
 
-export const { reset, errorReset } = noteSlice.actions;
 export default noteSlice.reducer;
