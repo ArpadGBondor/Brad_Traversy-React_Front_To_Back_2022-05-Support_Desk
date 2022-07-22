@@ -35,7 +35,7 @@ Yes, I could do it myself, but I already have 150+ repositories I've built mysel
 
 ## Mayor changes:
 
--   Not yet.
+-   [Bugfixes added from instructor's repository.](https://github.com/ArpadGBondor/Brad_Traversy-React_Front_To_Back_2022-05-Support_Desk/issues/3)
 
 ## Environment variables:
 
