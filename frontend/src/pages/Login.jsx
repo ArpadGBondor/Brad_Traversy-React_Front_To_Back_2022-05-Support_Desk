@@ -77,6 +77,7 @@ function Login() {
                             onChange={onChange}
                             placeholder="Enter your email"
                             required
+                            autoComplete="username"
                         />
                     </div>
                     <div className="form-group">
@@ -89,6 +90,7 @@ function Login() {
                             onChange={onChange}
                             placeholder="Enter password"
                             required
+                            autoComplete="current-password"
                         />
                     </div>
                     <div className="form-group">

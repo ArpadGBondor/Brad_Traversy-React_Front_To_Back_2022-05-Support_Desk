@@ -96,6 +96,7 @@ function Register() {
                             onChange={onChange}
                             placeholder="Enter your email"
                             required
+                            autoComplete="username"
                         />
                     </div>
                     <div className="form-group">
@@ -108,6 +109,7 @@ function Register() {
                             onChange={onChange}
                             placeholder="Enter password"
                             required
+                            autoComplete="new-password"
                         />
                     </div>
                     <div className="form-group">
@@ -120,6 +122,7 @@ function Register() {
                             onChange={onChange}
                             placeholder="Confirm password"
                             required
+                            autoComplete="new-password"
                         />
                     </div>
                     <div className="form-group">
