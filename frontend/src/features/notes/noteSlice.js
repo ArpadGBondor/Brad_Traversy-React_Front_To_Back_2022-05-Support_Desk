@@ -37,7 +37,7 @@ export const createNote = createAsyncThunk(
 );
 
 export const noteSlice = createSlice({
-    name: 'note',
+    name: 'notes',
     initialState,
     extraReducers: (builder) => {
         builder

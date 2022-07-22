@@ -56,7 +56,7 @@ export const closeTicket = createAsyncThunk('tickets/close', async (ticketId, th
 // function
 
 export const ticketSlice = createSlice({
-    name: 'ticket',
+    name: 'tickets',
     initialState,
     extraReducers: (builder) => {
         builder
@@ -64,12 +64,10 @@ export const ticketSlice = createSlice({
                 // NOTE: clear single ticket on tickets page, this replaces need for
                 // loading state on individual ticket
                 state.ticket = null;
+                state.tickets = null;
             })
             .addCase(getTickets.fulfilled, (state, action) => {
                 state.tickets = action.payload;
-            })
-            .addCase(getTickets.rejected, (state, action) => {
-                state.message = action.payload;
             })
             .addCase(getTicket.fulfilled, (state, action) => {
                 state.ticket = action.payload;
