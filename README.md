@@ -48,3 +48,7 @@ Yes, I could do it myself, but I already have 150+ repositories I've built mysel
 ## Resources:
 
 -   The source code of the instructor's solution is in [this Github repo](https://github.com/bradtraversy/support-desk)
+
+## Documentation of the solution
+
+-   You can find a detailed description of the solution in the [DOCUMENTATION.md](./DOCUMENTATION.md)
