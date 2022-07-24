@@ -35,49 +35,59 @@ The frontend allows users to register and login, and stores the JSON Web Token, 
 
 ##### Customer authentication
 
-// @desc Register a new user
-// @route POST /api/users
-// @access Public
+-   Register a new user
 
-// @desc Login a user
-// @route POST /api/users/login
-// @access Public
+    -   route: POST /api/users
+    -   Access Public
 
-// @desc Get current user
-// @route GET /api/users/me
-// @access Private
+-   Login a user
+
+    -   route: POST /api/users/login
+    -   Access Public
+
+-   Get current user
+
+    -   route: GET /api/users/me
+    -   Access Private
 
 ##### Tickets
 
-// @desc Get user tickets
-// @route GET /api/tickets
-// @access Private
+-   Get user tickets
 
-// @desc Create a ticket
-// @route POST /api/tickets
-// @access Private
+    -   route: GET /api/tickets
+    -   Access Private
 
-// @desc Get a single ticket
-// @route GET /api/tickets/:ticketID
-// @access Private
+-   Create a ticket
 
-// @desc Update a ticket
-// @route GET /api/tickets/:ticketID
-// @access Private
+    -   route: POST /api/tickets
+    -   Access Private
 
-// @desc Delete a ticket
-// @route GET /api/tickets/:ticketID
-// @access Private
+-   Get a single ticket
+
+    -   route: GET /api/tickets/:ticketID
+    -   Access Private
+
+-   Update a ticket
+
+    -   route: GET /api/tickets/:ticketID
+    -   Access Private
+
+-   Delete a ticket
+
+    -   route: GET /api/tickets/:ticketID
+    -   Access Private
 
 ##### Ticket notes
 
-// @desc Get notes for a ticket
-// @route GET /api/tickets/:ticketID/notes/
-// @access Private
+-   Get notes for a ticket
 
-// @desc Create ticket note
-// @route POST /api/tickets/:ticketID/notes/
-// @access Private
+    -   route: GET /api/tickets/:ticketID/notes/
+    -   Access Private
+
+-   Create ticket note
+
+    -   route: POST /api/tickets/:ticketID/notes/
+    -   Access Private
 
 #### Controllers
 
@@ -97,8 +107,23 @@ The frontend allows users to register and login, and stores the JSON Web Token, 
 #### Database models
 
 -   userModel
+    -   name
+    -   email
+    -   password
+    -   isAdmin
 -   ticketModel
+    -   user
+    -   product
+        -   iPhone / Macbook Pro / iMac / iPad
+    -   description
+    -   status
+        -   new / open / closed
 -   noteModel
+    -   user
+    -   ticket
+    -   text
+    -   isStaff
+    -   staffId
 
 ### Frontend structure
 
