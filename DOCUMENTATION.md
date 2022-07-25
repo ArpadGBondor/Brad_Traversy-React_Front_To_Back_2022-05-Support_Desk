@@ -134,24 +134,29 @@ The frontend allows users to register and login, and stores the JSON Web Token, 
 ###### Register
 
 -   Route: `/register`
+-   Access Public
 
 ###### Login
 
 -   Route: `/login`
+-   Access Public
 
 ##### Customer ticket handling
 
 ###### Create ticket
 
 -   Route: `/new-ticket`
+-   Access Private
 
 ###### List tickets
 
 -   Route: `/tickets`
+-   Access Private
 
 ###### View ticket
 
 -   Route: `/ticket/:ticketId`
+-   Access Private
 
 #### State management
 
@@ -160,12 +165,44 @@ The frontend allows users to register and login, and stores the JSON Web Token, 
 -   authSlice
 -   authService
 
+###### State
+
+-   user
+-   isLoading
+
+###### Actions
+
+-   register
+-   login
+-   logout
+
 ##### Tickets
 
 -   ticketSlice
 -   ticketService
 
+###### State
+
+-   tickets
+-   ticket
+
+###### Actions
+
+-   createTicket
+-   getTickets
+-   getTicket
+-   closeTicket
+
 ##### Notes
 
 -   noteSlice
 -   noteService
+
+###### State
+
+-   notes
+
+###### Actions
+
+-   getNotes
+-   createNote
