@@ -1,6 +1,6 @@
-import axios from 'axios';
+import api from '../api';
 
-const API_URL = '/api/tickets';
+const API_URL = '/tickets';
 
 // Get ticket notes
 const getNotes = async (ticketId, token) => {
@@ -9,7 +9,7 @@ const getNotes = async (ticketId, token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.get(`${API_URL}/${ticketId}/notes`, config);
+    const response = await api.get(`${API_URL}/${ticketId}/notes`, config);
     return response.data;
 };
 
@@ -20,7 +20,7 @@ const createNote = async (noteText, ticketId, token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.post(`${API_URL}/${ticketId}/notes`, { text: noteText }, config);
+    const response = await api.post(`${API_URL}/${ticketId}/notes`, { text: noteText }, config);
     return response.data;
 };
 

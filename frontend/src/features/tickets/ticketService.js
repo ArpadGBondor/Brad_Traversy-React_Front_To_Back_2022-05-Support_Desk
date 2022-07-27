@@ -1,6 +1,6 @@
-import axios from 'axios';
+import api from '../api';
 
-const API_URL = '/api/tickets';
+const API_URL = '/tickets';
 
 // Create new ticket
 const createTicket = async (ticketData, token) => {
@@ -9,7 +9,7 @@ const createTicket = async (ticketData, token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.post(API_URL, ticketData, config);
+    const response = await api.post(API_URL, ticketData, config);
     return response.data;
 };
 
@@ -20,7 +20,7 @@ const getTickets = async (token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.get(API_URL, config);
+    const response = await api.get(API_URL, config);
     return response.data;
 };
 
@@ -31,7 +31,7 @@ const getTicket = async (ticketID, token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.get(`${API_URL}/${ticketID}`, config);
+    const response = await api.get(`${API_URL}/${ticketID}`, config);
     return response.data;
 };
 
@@ -42,7 +42,7 @@ const closeTicket = async (ticketID, token) => {
             Authorization: `Bearer ${token}`,
         },
     };
-    const response = await axios.put(`${API_URL}/${ticketID}`, { status: 'closed' }, config);
+    const response = await api.put(`${API_URL}/${ticketID}`, { status: 'closed' }, config);
     return response.data;
 };
 
