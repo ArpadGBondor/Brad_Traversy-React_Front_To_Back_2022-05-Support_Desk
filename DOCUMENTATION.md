@@ -21,7 +21,7 @@ The project is a full stack application, that allows users to register, login, c
 
 ### Backend goals
 
-The backend protects all data in the database from unauthorised requests. The backend accepts requests to register new users and to login existing users, and returns a JSON Web Token, that can be used to access the protected data.
+The backend protects all data in the database from unauthorised requests. The backend accepts requests to register new users and to login existing users, and after a succesfull login, it returns a JSON Web Token, that can be used to access the protected data.
 
 ### Frontend goals
 
@@ -102,6 +102,10 @@ The frontend allows users to register and login, and stores the JSON Web Token, 
 -   body parser: express.json()
 -   body parser: express.urlencoded({ extended: false })
 -   authMiddleware
+    -   protect function
+        -   Expects the header request to contain a property named 'authorization' with a vallue of the word 'Bearer', followed by a ' ' space and a JSON Web Token.
+            -   e.g: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyY2VjZjExNTQ1OTZkZjIyZTRhNGM0MyIsImlhdCI6MTY1Nzc0MDgyNiwiZXhwIjoxNjYwMzMyODI2fQ.PG24TxtqXcoVuJtqYkHp3tWVyqq77eMQn86GV755vzc'
+        -   If the token cannot be found or verified, the middleware returns a 401 rosponse.
 -   errorMiddleware
 
 #### Database models
@@ -111,6 +115,7 @@ The frontend allows users to register and login, and stores the JSON Web Token, 
     -   email
     -   password
     -   isAdmin
+        -   boolean flag, that shows if the user is customer or staff member
 -   ticketModel
     -   user
     -   product
